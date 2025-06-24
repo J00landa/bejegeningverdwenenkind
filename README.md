@@ -1,36 +1,36 @@
-# 🏥 Bejegening & Communicatie - HTV
+# 🛡️ Bejegening & Communicatie - HTV
 
-> **Een interactieve leeromgeving voor het vak Bejegening & Communicatie aan de Hogeschool voor Toegepaste Vaardigheden (HTV)**
+> **Een interactieve leeromgeving voor het vak Bejegening & Communicatie voor studenten Handhaver, Toezicht en Veiligheid (HTV)**
 
-Een moderne, AI-ondersteunde leerplatform dat studenten helpt bij het ontwikkelen van effectieve communicatievaardigheden en professionele bejegening in de zorg.
+Een moderne, AI-ondersteunde leerplatform dat studenten helpt bij het ontwikkelen van effectieve communicatievaardigheden en professionele bejegening in handhavings-, toezicht- en veiligheidssituaties.
 
 ## ✨ Functionaliteiten
 
 ### 🎯 **Leerdoelen**
-- **Communicatieve Vaardigheden**: Effectief communiceren, actief luisteren, empathische reacties
-- **Gesprekstechnieken**: Open vragen, non-verbale communicatie, moeilijke gesprekken
-- **Professionele Houding**: Conflicthantering, culturele diversiteit, ethische besluitvorming
-- **Reflectie**: Zelfreflectie op communicatiestijl en professionele ontwikkeling
+- **De-escalatie Technieken**: Gespannen situaties kalmeren en conflicten oplossen
+- **Assertieve Communicatie**: Zelfverzekerd en duidelijk communiceren met autoriteit
+- **Professionele Houding**: Integriteit, respect en ethisch handelen in complexe situaties
+- **Situatie Management**: Risico's inschatten en veilig optreden
 
 ### 🤖 **AI Communicatie Assistent**
-- 📝 **Gespreksanalyse**: Upload gesprekstranscripties voor feedback
-- 🎭 **Rollenspel Oefening**: Oefen met AI als virtuele patiënt of collega
-- 💡 **Advies & Tips**: Concrete tips voor communicatie-uitdagingen
-- 📚 **Theorie Uitleg**: Communicatiemodellen met praktijkvoorbeelden
-- 🎵 **Audio Transcriptie**: Analyseer opgenomen gesprekken
-- 📄 **Document Analyse**: Upload casussen en reflectieverslagen
+- 🎭 **Rollenspel Training**: Oefen met AI als boze burger, overtreder of collega
+- ⚡ **De-escalatie Oefening**: Leer gespannen situaties te kalmeren
+- 📋 **Situatie Analyse**: Upload verslagen voor feedback op je aanpak
+- 📚 **Juridische Communicatie**: Leer regels helder uitleggen aan burgers
+- 🎵 **Audio Analyse**: Analyseer opgenomen gesprekken uit de praktijk
+- 📄 **Verslag Feedback**: Upload situatieverslagen voor verbeterpunten
 
 ### 🔊 **Geavanceerde TTS Features**
 - 🎙️ **Dual TTS Engines**: Microsoft TTS + Gemini AI TTS
-- 🎭 **30 Gemini Voices**: Verschillende stemmen voor rollenspel
-- 😊 **Emotie Controle**: 7 verschillende emoties voor realistische gesprekken
-- ⚡ **Snelheidsregeling**: Aanpasbare spraaksnelheid voor leren
+- 🎭 **30 Gemini Voices**: Verschillende stemmen voor realistische rollenspellen
+- 😊 **Emotie Controle**: 7 verschillende emoties (boos, kalm, agressief, etc.)
+- ⚡ **Snelheidsregeling**: Aanpasbare spraaksnelheid voor training
 
 ### 📁 **Multi-Modal Leren**
-- 🖼️ **Afbeeldingen**: Analyseer non-verbale communicatie in foto's
-- 📄 **Documenten**: Upload casussen, reflectieverslagen, theorie
-- 🎵 **Audio**: Transcribeer en analyseer gesprekken
-- 📊 **Data**: Verwerk enquêtes en onderzoeksdata
+- 🖼️ **Situatie Foto's**: Analyseer lichaamstaal en non-verbale signalen
+- 📄 **Documenten**: Upload wet- en regelgeving, procedures, verslagen
+- 🎵 **Audio**: Transcribeer en analyseer gesprekken uit de praktijk
+- 📊 **Data**: Verwerk incidentrapporten en statistieken
 
 ## 🚀 Quick Start
 
@@ -52,47 +52,82 @@ npm run dev
 ### Stap 4: Deployment
 Deploy naar Netlify via de "Deploy to Netlify" button in Bolt.new
 
+## 🛡️ HTV Werkgebieden
+
+### 🏛️ **Gemeentelijke Handhaving**
+- APV handhaving en toezicht
+- Parkeercontrole en verkeer
+- Milieu en afval handhaving
+- Horeca en evenementen toezicht
+
+### 🔒 **Veiligheid & Beveiliging**
+- Objectbeveiliging en toegangscontrole
+- Evenementbeveiliging en crowd control
+- Surveillance en preventie
+- Noodprocedures en evacuatie
+
+### 👁️ **Toezicht & Inspectie**
+- Bouwtoezicht en vergunningen
+- Arbeidsomstandigheden inspectie
+- Milieu en veiligheid controles
+- Kwaliteitstoezicht en compliance
+
+### ⚠️ **Openbare Orde**
+- Evenementen en manifestaties
+- Overlast en verstoring aanpak
+- Jeugd en groepsaanpak
+- Crisis en incident management
+
 ## 📚 Praktijkvoorbeelden
 
 ### 🎭 **Rollenspel Scenario's**
 ```
-"Ik wil oefenen met een gesprek met een angstige patiënt voor een operatie. 
-Kun je de rol van de patiënt spelen?"
+"Simuleer een gesprek met een agressieve overtreder die een boete 
+weigert te accepteren. Ik wil oefenen met de-escalatie."
 
-"Simuleer een gesprek met een boze familielid van een patiënt. 
-Ik wil leren hoe ik dit professioneel kan de-escaleren."
+"Speel de rol van een boze ondernemer die zijn vergunning 
+ingetrokken krijgt. Hoe blijf ik professioneel?"
 ```
 
-### 📝 **Gespreksanalyse**
+### ⚡ **De-escalatie Training**
 ```
-Upload een audio-opname van een gesprek en vraag:
-"Analyseer dit gesprek en geef feedback op mijn luistervaardigheden 
-en empathische reacties."
+"Hoe ga ik om met een groep jongeren die overlast veroorzaakt 
+en agressief reageert op mijn aanspreken?"
+
+"Geef me tips voor het kalmeren van een emotionele situatie 
+bij een huisuitzetting."
 ```
 
-### 💡 **Theorie & Praktijk**
+### 📋 **Situatie Analyse**
 ```
-"Leg het SOLER model uit en geef een praktijkvoorbeeld 
-uit de verpleegkunde."
+Upload een audio-opname of verslag en vraag:
+"Analyseer mijn aanpak in deze situatie. Wat kon beter? 
+Welke de-escalatie technieken had ik kunnen gebruiken?"
+```
 
-"Hoe pas ik de communicatiecirkel van Schulz von Thun toe 
-in een gesprek met een patiënt?"
+### 📚 **Juridische Communicatie**
+```
+"Hoe leg ik de nieuwe APV regels uit aan een ondernemer 
+die het niet begrijpt en boos wordt?"
+
+"Help me een complexe procedure helder uitleggen 
+aan een burger die weerstand biedt."
 ```
 
 ## 🎓 Voor Docenten
 
 ### 📊 **Leeractiviteiten**
-- **Casusanalyse**: Studenten uploaden casussen voor AI-feedback
-- **Gesprekstraining**: Rollenspel met AI voor veilige oefenomgeving
-- **Reflectieverslagen**: AI helpt bij structureren van reflecties
-- **Peer Review**: Studenten analyseren elkaars gesprekken
+- **Casusanalyse**: Studenten uploaden echte situaties voor AI-feedback
+- **Rollenspel Training**: Veilige oefenomgeving met AI-simulaties
+- **De-escalatie Oefening**: Gestructureerde training in conflicthantering
+- **Reflectieverslagen**: AI helpt bij analyse van eigen handelen
 
 ### 🔧 **Aanpassingen**
 Het platform kan eenvoudig aangepast worden voor:
-- Specifieke HTV-casussen en scenario's
-- Lokale richtlijnen en protocollen
-- Verschillende zorgsettings (ziekenhuis, thuiszorg, GGZ)
-- Multidisciplinaire samenwerking
+- Specifieke gemeentelijke procedures en protocollen
+- Lokale wet- en regelgeving
+- Verschillende handhavingsdomeinen
+- Multidisciplinaire samenwerking (politie, brandweer, etc.)
 
 ## 🛠️ Technical Features
 
@@ -104,9 +139,9 @@ Het platform kan eenvoudig aangepast worden voor:
 - `/api/upload-docx` - Document verwerking
 
 ### 📱 **Responsive Design**
-- Mobile-first ontwerp voor gebruik op alle apparaten
+- Mobile-first ontwerp voor gebruik in het veld
 - Touch-friendly interface voor tablets
-- Camera functionaliteit voor foto-analyse
+- Camera functionaliteit voor situatie-documentatie
 - Drag & drop voor eenvoudige file uploads
 
 ### 🔒 **Privacy & Veiligheid**
@@ -120,53 +155,73 @@ Het platform kan eenvoudig aangepast worden voor:
 Na gebruik van dit platform kunnen studenten:
 
 ### 💬 **Communicatie**
-- ✅ Effectief communiceren met patiënten en collega's
+- ✅ Effectief communiceren met burgers en overtreders
 - ✅ Actief luisteren en empathische reacties geven
-- ✅ Non-verbale signalen herkennen en interpreteren
-- ✅ Moeilijke gesprekken voeren met tact en respect
+- ✅ Duidelijke instructies geven en grenzen stellen
+- ✅ Gespannen situaties de-escaleren
 
-### 🤝 **Professionele Vaardigheden**
-- ✅ Conflicten de-escaleren en constructief oplossen
-- ✅ Culturele diversiteit respecteren en benutten
-- ✅ Ethische dilemma's herkennen en bespreken
-- ✅ Reflecteren op eigen communicatiestijl
+### 🛡️ **Professionele Vaardigheden**
+- ✅ Autoriteit uitoefenen met respect en integriteit
+- ✅ Omgaan met agressie en weerstand
+- ✅ Culturele diversiteit respecteren in handhaving
+- ✅ Ethisch handelen in dilemmasituaties
 
-### 🎭 **Praktische Toepassing**
-- ✅ Gesprekstechnieken toepassen in verschillende zorgsettings
-- ✅ Professionele grenzen bewaken in patiëntcontact
-- ✅ Samenwerken in multidisciplinaire teams
-- ✅ Feedback geven en ontvangen op communicatie
+### ⚡ **Praktische Toepassing**
+- ✅ De-escalatietechnieken toepassen in verschillende situaties
+- ✅ Risico's inschatten en veilig optreden
+- ✅ Samenwerken met collega's en andere diensten
+- ✅ Reflecteren op eigen handelen en communicatiestijl
+
+## 📖 Communicatiemodellen
+
+### 🔄 **LEAP Model**
+- **Listen**: Actief luisteren naar de burger
+- **Empathize**: Begrip tonen voor de situatie
+- **Apologize**: Excuses voor ongemak (niet voor beleid)
+- **Partner**: Samenwerken naar een oplossing
+
+### 📈 **Escalatieladder**
+- **Informeren**: Uitleg geven over regels en gevolgen
+- **Waarschuwen**: Duidelijke waarschuwing geven
+- **Sanctioneren**: Boete of maatregel opleggen
+- **Dwangmiddelen**: Laatste redmiddel bij non-compliance
+
+### 🎭 **DISC Communicatie**
+- **Dominant**: Direct en resultaatgericht benaderen
+- **Invloedrijk**: Enthousiast en overtuigend communiceren
+- **Stabiel**: Geduldig en ondersteunend optreden
+- **Consciëntieus**: Feitelijk en gedetailleerd uitleggen
 
 ## 🔗 Resources
 
-### 📖 **Communicatietheorie**
-- SOLER model (Egan)
-- Communicatiecirkel (Schulz von Thun)
-- Empathische communicatie (Rogers)
-- Motiverende gespreksvoering (Miller & Rollnick)
+### 📖 **Handhavingstheorie**
+- Responsive regulation (Ayres & Braithwaite)
+- Procedural justice (Tyler)
+- Legitimacy theory (Bottoms & Tankebe)
+- Community policing principles
 
 ### 🎥 **Praktijkmateriaal**
-- Rollenspel scenario's uit de zorgpraktijk
-- Video-analyses van gesprekstechnieken
-- Casussen uit verschillende zorgsettings
+- Rollenspel scenario's uit de handhavingspraktijk
+- Video-analyses van de-escalatietechnieken
+- Casussen uit verschillende handhavingsdomeinen
 - Reflectie-instrumenten en feedback formulieren
 
 ### 🌐 **Externe Links**
-- [HTV Website](https://htv.nl) - Officiële hogeschool website
-- [Beroepscode Verpleegkundigen](https://www.venvn.nl) - Professionele standaarden
-- [Kwaliteitskader Zorgcommunicatie](https://www.zorginzicht.nl) - Kwaliteitsrichtlijnen
+- [Vereniging Nederlandse Gemeenten](https://vng.nl) - Handhavingsrichtlijnen
+- [Platform31](https://platform31.nl) - Kennis en innovatie
+- [Politieacademie](https://politieacademie.nl) - Onderzoek en onderwijs
 
 ---
 
 ## 🎉 **Klaar om te Leren?**
 
-Dit platform biedt een veilige, interactieve omgeving om communicatievaardigheden te ontwikkelen die essentieel zijn voor professionele zorgverlening. Van basis gesprekstechnieken tot complexe ethische dilemma's - de AI-assistent helpt je bij elke stap van je leerproces.
+Dit platform biedt een veilige, interactieve omgeving om communicatievaardigheden te ontwikkelen die essentieel zijn voor professionele handhaving, toezicht en veiligheid. Van basis gesprekstechnieken tot complexe de-escalatie - de AI-assistent helpt je bij elke stap van je leerproces.
 
-**💙 Ontwikkeld voor HTV studenten**  
-**🚀 Start nu met leren en oefen je communicatievaardigheden!**
+**🛡️ Ontwikkeld voor HTV studenten**  
+**🚀 Start nu met leren en oefen je handhavingsvaardigheden!**
 
 ---
 
 *Bejegening & Communicatie Platform v1.0*  
-*HTV - Hogeschool voor Toegepaste Vaardigheden*  
+*HTV - Handhaver, Toezicht en Veiligheid*  
 *Last updated: December 2024*

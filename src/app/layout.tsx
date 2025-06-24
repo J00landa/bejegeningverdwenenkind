@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Bejegening & Communicatie - HTV',
-  description: 'Leer effectieve communicatie en professionele bejegening in de zorg. HTV - Hogeschool voor Toegepaste Vaardigheden',
+  description: 'Leer professionele communicatie en effectieve bejegening in handhaving, toezicht en veiligheidssituaties. HTV - Handhaver, Toezicht en Veiligheid',
 }
 
 export default function RootLayout({
