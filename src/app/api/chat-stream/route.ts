@@ -51,6 +51,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Detect roleplay requests and add specific instructions
+    let processedMessage = message
+    const isRoleplayRequest = message.toLowerCase().includes('speel') || 
+                             message.toLowerCase().includes('simuleer') || 
+                             message.toLowerCase().includes('rol van')
+    
+    if (isRoleplayRequest) {
+      processedMessage = `${message}
+
+BELANGRIJKE INSTRUCTIES VOOR ROLLENSPEL:
+- Speel ALLEEN de gevraagde rol (burger, ondernemer, jongere, etc.)
+- Spreek de handhaver direct aan in de situatie
+- Geef GEEN uitleg of tips - blijf volledig in karakter
+- Wacht op de reactie van de handhaver voordat je verder gaat
+- Reageer realistisch op wat de handhaver zegt of doet
+- Begin direct met de situatie, geen inleiding
+
+Start nu direct in de rol:`
+    }
     // Selecteer het juiste model op basis van aiModel
     const modelName = aiModel === 'pro' ? 'gemini-2.5-pro-preview-06-05' :
                      aiModel === 'smart' ? 'gemini-2.5-flash-preview-05-20' :
@@ -95,7 +114,7 @@ export async function POST(request: NextRequest) {
             })
             
             result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: message }, ...imageParts] }],
+              contents: [{ role: 'user', parts: [{ text: processedMessage }, ...imageParts] }],
               tools: tools
             })
           } else if (image) {
@@ -110,13 +129,13 @@ export async function POST(request: NextRequest) {
             }
             
             result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: message }, imagePart] }],
+              contents: [{ role: 'user', parts: [{ text: processedMessage }, imagePart] }],
               tools: tools
             })
           } else {
             // Text only
             result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: message }] }],
+              contents: [{ role: 'user', parts: [{ text: processedMessage }] }],
               tools: tools
             })
           }
