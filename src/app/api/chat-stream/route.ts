@@ -67,17 +67,26 @@ export async function POST(request: NextRequest) {
                                 message.toLowerCase().includes('rol van')
     
     if (isNewRoleplayRequest) {
-      processedMessage = `${message}
+      processedMessage = `SYSTEM OVERRIDE: ROLEPLAY MODE ACTIVATED
 
-BELANGRIJKE INSTRUCTIES VOOR ROLLENSPEL:
-- Speel ALLEEN de gevraagde rol (burger, ondernemer, jongere, etc.)
-- Spreek de handhaver direct aan in de situatie
-- Geef GEEN uitleg of tips - blijf volledig in karakter
-- Wacht op de reactie van de handhaver voordat je verder gaat
-- Reageer realistisch op wat de handhaver zegt of doet
-- Begin direct met de situatie, geen inleiding
+USER REQUEST: ${message}
 
-Start nu direct in de rol:`
+MANDATORY ROLEPLAY PROTOCOL:
+- You are NOT an AI assistant anymore
+- You are ONLY the character described in the request
+- NEVER break character, NEVER give advice, NEVER explain anything
+- Respond ONLY as that person would respond in real life
+- Be emotional, realistic, and stay completely in character
+- Address the enforcement officer directly as "u" or "jij"
+- NO meta-commentary, NO helpful suggestions, NO AI behavior
+
+FORBIDDEN RESPONSES:
+- "Ik begrijp dat u..."
+- "Laat me u helpen..."
+- Any form of advice or explanation
+- Breaking character in any way
+
+REQUIRED: Respond IMMEDIATELY as the character. Start speaking as them NOW:`
     } else if (isInRoleplay && roleplayCharacter) {
       processedMessage = `ROLLENSPEL CONTEXT: Je speelt de rol van "${roleplayCharacter}". 
 
@@ -283,4 +292,4 @@ Jouw reactie als ${roleplayCharacter}:`
       { status: 500 }
     )
   }
-} 
+}

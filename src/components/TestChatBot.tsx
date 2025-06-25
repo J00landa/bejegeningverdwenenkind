@@ -1123,23 +1123,55 @@ export default function TestChatBot() {
 
         {/* User Turn Prompt - Shows when it's the user's turn to respond */}
         {isUserTurnToRespond && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-pulse">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm">🎯</span>
                 </div>
                 <div>
-                  <h4 className="text-green-800 font-semibold">Reageer nu als handhaver op deze situatie</h4>
-                  <p className="text-green-600 text-sm">Typ je professionele reactie hieronder en druk Enter om het rollenspel voort te zetten</p>
+                  <h4 className="text-green-800 font-semibold">🎭 JE BEURT! Reageer nu als handhaver</h4>
+                  <p className="text-green-600 text-sm">De persoon wacht op jouw professionele reactie. Hoe ga je deze situatie aanpakken?</p>
                 </div>
               </div>
               <button
                 onClick={handleNewConversation}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center space-x-2"
               >
-                📝 Nieuw gesprek
+                <span>📝</span>
+                <span>Nieuw gesprek</span>
               </button>
+            </div>
+            
+            {/* Quick response suggestions for roleplay */}
+            <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
+              <p className="text-green-700 text-xs font-medium mb-2">💡 Snelle reactie opties:</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setMessage("Meneer/mevrouw, ik begrijp uw frustratie. Laat me uitleggen waarom deze maatregel nodig is.")}
+                  className="px-3 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                >
+                  🤝 Empathisch
+                </button>
+                <button
+                  onClick={() => setMessage("Ik moet u vragen om rustig te blijven. We kunnen dit samen oplossen als u meewerkt.")}
+                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                >
+                  ⚖️ Assertief
+                </button>
+                <button
+                  onClick={() => setMessage("Kunt u mij uw identiteitsbewijs tonen? Dan kunnen we kijken wat de mogelijkheden zijn.")}
+                  className="px-3 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
+                >
+                  📋 Procedureel
+                </button>
+                <button
+                  onClick={() => setMessage("Als u niet meewerkt, ben ik genoodzaakt verdere maatregelen te nemen.")}
+                  className="px-3 py-1 bg-orange-100 text-orange-700 rounded text-xs hover:bg-orange-200 transition-colors"
+                >
+                  ⚠️ Escalatie
+                </button>
+              </div>
             </div>
           </div>
         )}
