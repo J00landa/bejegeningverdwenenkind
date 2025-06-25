@@ -531,6 +531,8 @@ export default function TestChatBot() {
         }
       }
 
+      // Clear message after sending (so user can type new response)
+      setMessage('')
       // Start streaming request
       const response = await fetch('/api/chat-stream', {
         method: 'POST',
@@ -1067,6 +1069,33 @@ export default function TestChatBot() {
           </div>
         )}
 
+        {/* Continue Conversation Prompt - Show when there's a response */}
+        {(response || streamingResponse) && !isStreaming && !isWaitingForStream && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="text-green-700 font-medium text-sm">
+                  💬 Reageer nu als handhaver op deze situatie
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setResponse('')
+                  setStreamingResponse('')
+                  setMessage('')
+                }}
+                className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded"
+                title="Nieuw gesprek starten"
+              >
+                🔄 Nieuw gesprek
+              </button>
+            </div>
+            <p className="text-green-600 text-xs mt-1 ml-5">
+              Typ je professionele reactie hieronder en druk Enter om het rollenspel voort te zetten
+            </p>
+          </div>
+        )}
 
         {/* Response Area */}
         {isWaitingForStream && (
