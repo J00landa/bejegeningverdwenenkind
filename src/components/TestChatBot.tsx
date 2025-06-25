@@ -485,12 +485,22 @@ export default function TestChatBot() {
     
     if (!message.trim() && selectedFiles.length === 0) return
 
+    // Store the current message to check if it's a roleplay
+    const currentMessage = message
+    const isRoleplayMessage = currentMessage.toLowerCase().includes('speel') || 
+                             currentMessage.toLowerCase().includes('simuleer') || 
+                             currentMessage.toLowerCase().includes('rol van')
+
     // Reset states
     setIsWaitingForStream(true)
     setIsStreaming(false)
     setIsLoading(false)
     setStreamingResponse('')
     setResponse('')
+    
+    // Clear message input immediately so user can type next response
+    setMessage('')
+    
     currentStreamingResponseRef.current = ''
     hasReceivedFirstTokenRef.current = false
 
@@ -499,7 +509,7 @@ export default function TestChatBot() {
 
     try {
       const payload: any = { 
-        message, 
+        message: currentMessage, 
         useGrounding: aiModel === 'internet' ? useGrounding : false,
         aiModel 
       }
@@ -524,15 +534,13 @@ export default function TestChatBot() {
           }
         }).join('\n\n---\n\n')
         
-        if (message.trim()) {
-          payload.message = `${message}\n\n=== BIJGEVOEGDE BESTANDEN ===\n${fileContexts}`
+        if (currentMessage.trim()) {
+          payload.message = `${currentMessage}\n\n=== BIJGEVOEGDE BESTANDEN ===\n${fileContexts}`
         } else {
           payload.message = `Analyseer de volgende bestanden:\n\n${fileContexts}`
         }
       }
 
-      // Clear message after sending (so user can type new response)
-      setMessage('')
       // Start streaming request
       const response = await fetch('/api/chat-stream', {
         method: 'POST',
@@ -582,6 +590,16 @@ export default function TestChatBot() {
                 setIsStreaming(false)
                 setIsWaitingForStream(false)
                 setResponse(currentStreamingResponseRef.current)
+                
+                // If this was a roleplay, show prompt for student to continue
+                if (isRoleplayMessage) {
+                  // Focus back on input field for next response
+                  setTimeout(() => {
+                    if (textareaRef.current) {
+                      textareaRef.current.focus()
+                    }
+                  }, 100)
+                }
                 return
               }
               
@@ -931,6 +949,18 @@ export default function TestChatBot() {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}>
 
+          {/* Roleplay Continuation Prompt */}
+          {(response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading && (
+            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span className="text-blue-800 font-medium text-sm">🎭 Reageer nu als handhaver op deze situatie</span>
+              </div>
+              <p className="text-blue-700 text-xs">
+                Typ je professionele reactie hieronder en druk Enter. De AI blijft in karakter en reageert op jouw aanpak!
+              </p>
+            </div>
+          )}
 
           {/* Drag & Drop Overlay */}
           {isDragOver && (
@@ -951,11 +981,15 @@ export default function TestChatBot() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={isDragOver ? "Drop bestanden of tekst hier..." : "Typ een vraag voor Gemini... (of plak met Ctrl+V)"}
-                placeholder={isDragOver ? "Drop bestanden of tekst hier..." : "Typ je vraag hier... (bijv. 'Speel een boze burger die...' voor rollenspel)"}
+                placeholder={
+                  isDragOver ? "Drop bestanden of tekst hier..." :
+                  (response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading ? 
+                    "Reageer als handhaver op de situatie hierboven..." :
+                    "Typ een vraag voor Gemini... (of plak met Ctrl+V)"
+                }
                 className="w-full p-2 border-0 resize-none focus:outline-none"
                 rows={2}
-                disabled={isLoading}
+                disabled={isLoading || isWaitingForStream}
               />
               {pasteHint && (
                 <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
@@ -1098,6 +1132,28 @@ export default function TestChatBot() {
         )}
 
         {/* Response Area */}
+        {/* Show "Nieuw gesprek" button when there's a response */}
+        {(response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => {
+                setResponse('')
+                setStreamingResponse('')
+                setMessage('')
+                setUploadedFiles([])
+                setGroundingData(null)
+                if (textareaRef.current) {
+                  textareaRef.current.focus()
+                }
+              }}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors flex items-center space-x-2"
+            >
+              <span>🔄</span>
+              <span>Nieuw gesprek</span>
+            </button>
+          </div>
+        )}
+        
         {isWaitingForStream && (
           <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
             <div className="flex items-center space-x-3">
