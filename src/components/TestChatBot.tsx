@@ -26,6 +26,7 @@ export default function TestChatBot() {
   const [aiModel, setAiModel] = useState<'pro' | 'smart' | 'internet'>('smart') // 'pro' = 2.5 Pro, 'smart' = 2.5 Flash, 'internet' = 2.0
   const [useGrounding, setUseGrounding] = useState(true)
   const [groundingData, setGroundingData] = useState<any>(null)
+  const [isUserTurnToRespond, setIsUserTurnToRespond] = useState(false)
 
   // Automatically enable grounding when Internet model is selected
   useEffect(() => {
@@ -44,6 +45,13 @@ export default function TestChatBot() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const recognitionRef = useRef<any>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Focus the textarea when it's the user's turn to respond
+  useEffect(() => {
+    if (isUserTurnToRespond && textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }, [isUserTurnToRespond])
 
   // Setup paste event listeners
   useEffect(() => {
@@ -149,6 +157,22 @@ export default function TestChatBot() {
   }
 
   const getSelectedFiles = () => uploadedFiles.filter(file => file.selected)
+
+  const handleNewConversation = () => {
+    setMessage('')
+    setResponse('')
+    setStreamingResponse('')
+    setUploadedFiles([])
+    setIsUserTurnToRespond(false)
+    setGroundingData(null)
+    setCapturedImage('')
+    setImagePreview('')
+    setUploadedContent('')
+    setPasteHint('')
+    setIsLoading(false)
+    setIsStreaming(false)
+    setIsWaitingForStream(false)
+  }
 
   const handlePaste = async (e: ClipboardEvent) => {
     const items = e.clipboardData?.items
@@ -485,11 +509,8 @@ export default function TestChatBot() {
     
     if (!message.trim() && selectedFiles.length === 0) return
 
-    // Store the current message to check if it's a roleplay
-    const currentMessage = message
-    const isRoleplayMessage = currentMessage.toLowerCase().includes('speel') || 
-                             currentMessage.toLowerCase().includes('simuleer') || 
-                             currentMessage.toLowerCase().includes('rol van')
+    // Reset user turn state at the beginning
+    setIsUserTurnToRespond(false)
 
     // Reset states
     setIsWaitingForStream(true)
@@ -497,10 +518,6 @@ export default function TestChatBot() {
     setIsLoading(false)
     setStreamingResponse('')
     setResponse('')
-    
-    // Clear message input immediately so user can type next response
-    setMessage('')
-    
     currentStreamingResponseRef.current = ''
     hasReceivedFirstTokenRef.current = false
 
@@ -509,7 +526,7 @@ export default function TestChatBot() {
 
     try {
       const payload: any = { 
-        message: currentMessage, 
+        message, 
         useGrounding: aiModel === 'internet' ? useGrounding : false,
         aiModel 
       }
@@ -534,8 +551,8 @@ export default function TestChatBot() {
           }
         }).join('\n\n---\n\n')
         
-        if (currentMessage.trim()) {
-          payload.message = `${currentMessage}\n\n=== BIJGEVOEGDE BESTANDEN ===\n${fileContexts}`
+        if (message.trim()) {
+          payload.message = `${message}\n\n=== BIJGEVOEGDE BESTANDEN ===\n${fileContexts}`
         } else {
           payload.message = `Analyseer de volgende bestanden:\n\n${fileContexts}`
         }
@@ -590,16 +607,6 @@ export default function TestChatBot() {
                 setIsStreaming(false)
                 setIsWaitingForStream(false)
                 setResponse(currentStreamingResponseRef.current)
-                
-                // If this was a roleplay, show prompt for student to continue
-                if (isRoleplayMessage) {
-                  // Focus back on input field for next response
-                  setTimeout(() => {
-                    if (textareaRef.current) {
-                      textareaRef.current.focus()
-                    }
-                  }, 100)
-                }
                 return
               }
               
@@ -643,6 +650,10 @@ export default function TestChatBot() {
       setIsWaitingForStream(false)
       setIsLoading(false)
       abortControllerRef.current = null
+      
+      // Clear message and set user turn after AI response is complete
+      setMessage('')
+      setIsUserTurnToRespond(true)
     }
   }
 
@@ -935,225 +946,9 @@ export default function TestChatBot() {
               </div>
             </div>
           </div>
-
-
         </div>
 
-        {/* Input Area */}
-        <div className={`bg-white rounded-lg border transition-all duration-200 p-3 ${
-          isDragOver 
-            ? 'border-purple-500 border-2 bg-purple-50' 
-            : 'border-purple-200'
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}>
-
-          {/* Roleplay Continuation Prompt */}
-          {(response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading && (
-            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-blue-800 font-medium text-sm">🎭 Reageer nu als handhaver op deze situatie</span>
-              </div>
-              <p className="text-blue-700 text-xs">
-                Typ je professionele reactie hieronder en druk Enter. De AI blijft in karakter en reageert op jouw aanpak!
-              </p>
-            </div>
-          )}
-
-          {/* Drag & Drop Overlay */}
-          {isDragOver && (
-            <div className="absolute inset-2 border-2 border-dashed border-purple-400 rounded-lg bg-purple-50 bg-opacity-90 flex items-center justify-center z-10">
-              <div className="text-center">
-                <div className="text-4xl mb-2">📁</div>
-                <p className="text-purple-700 font-semibold">Drop bestanden of tekst hier</p>
-                <p className="text-purple-600 text-sm">Afbeeldingen, documenten, of URLs</p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-end space-x-2">
-            {/* Text Input */}
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={
-                  isDragOver ? "Drop bestanden of tekst hier..." :
-                  (response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading ? 
-                    "Reageer als handhaver op de situatie hierboven..." :
-                    "Typ een vraag voor Gemini... (of plak met Ctrl+V)"
-                }
-                className="w-full p-2 border-0 resize-none focus:outline-none"
-                rows={2}
-                disabled={isLoading || isWaitingForStream}
-              />
-              {pasteHint && (
-                <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                  {pasteHint}
-                </div>
-              )}
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-2">
-              {/* File Upload Button */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                title="Bestand uploaden (📸 afbeeldingen, 📄 documenten, 📊 data, 🎵 audio)"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                </svg>
-              </button>
-              
-              {/* Camera Button */}
-              <CameraCapture 
-                onCapture={handleCameraCapture}
-                disabled={isLoading}
-              />
-              
-              {/* Voice Input Button */}
-              <button
-                onClick={toggleVoiceRecognition}
-                disabled={isLoading}
-                className={`p-2 rounded-lg transition-colors ${
-                  isListening 
-                    ? 'text-red-600 bg-red-50 animate-pulse' 
-                    : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'
-                }`}
-                title={isListening ? "Stop opnamen" : "Start spraakherkenning"}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </button>
-              
-              {/* Send Button */}
-              <button
-                onClick={sendMessageStreaming}
-                disabled={(isLoading || isStreaming || isWaitingForStream) || (!message.trim() && getSelectedFiles().length === 0)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isWaitingForStream ? '🤔' : isStreaming ? '💭' : isLoading ? '⏳' : '🚀'}
-              </button>
-            </div>
-          </div>
-          
-          {/* Upload Status */}
-          {uploadedContent && (
-            <div className="mt-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
-              ✅ Bestand geüpload ({uploadedContent.length} karakters)
-            </div>
-          )}
-          
-          {/* Voice Status */}
-          {isListening && (
-            <div className="mt-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded flex items-center">
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
-              Luistert...
-            </div>
-          )}
-        </div>
-
-        {/* Rollenspel Quick Start Buttons - Outside input area */}
-        {!message.trim() && uploadedFiles.length === 0 && !response && !streamingResponse && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-blue-800 mb-3 flex items-center">
-              🎭 Quick Start Rollenspellen - Klik om direct te beginnen:
-            </h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <button
-                onClick={() => setMessage("Speel een boze burger die zijn parkeerboete weigert te betalen en dreigt met een klacht. Ik ben de handhaver.")}
-                className="text-sm bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-lg transition-colors text-left"
-              >
-                🔥 <strong>Boze Burger</strong><br/>
-                <span className="text-xs">Weigert boete</span>
-              </button>
-              <button
-                onClick={() => setMessage("Simuleer een emotionele ondernemer die zijn terrasvergunning verliest. Speel de rol realistisch. Ik ben de handhaver.")}
-                className="text-sm bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-2 rounded-lg transition-colors text-left"
-              >
-                😤 <strong>Ondernemer</strong><br/>
-                <span className="text-xs">Verliest vergunning</span>
-              </button>
-              <button
-                onClick={() => setMessage("Speel een groep jongeren die overlast veroorzaakt en uitdagend reageert op aanspreken. Ik ben de handhaver.")}
-                className="text-sm bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-2 rounded-lg transition-colors text-left"
-              >
-                👥 <strong>Jongeren</strong><br/>
-                <span className="text-xs">Overlast groep</span>
-              </button>
-              <button
-                onClick={() => setMessage("Simuleer iemand die beweert dat de controle discriminatie is en dreigt met de media. Ik ben de handhaver.")}
-                className="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-lg transition-colors text-left"
-              >
-                🤔 <strong>Discriminatie</strong><br/>
-                <span className="text-xs">Beweert onrecht</span>
-              </button>
-            </div>
-            <p className="text-xs text-blue-600 mt-3 text-center">
-              💡 De AI blijft in de gekozen rol en reageert realistisch op jouw professionele aanpak als handhaver
-            </p>
-          </div>
-        )}
-
-        {/* Continue Conversation Prompt - Show when there's a response */}
-        {(response || streamingResponse) && !isStreaming && !isWaitingForStream && (
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-green-700 font-medium text-sm">
-                  💬 Reageer nu als handhaver op deze situatie
-                </span>
-              </div>
-              <button
-                onClick={() => {
-                  setResponse('')
-                  setStreamingResponse('')
-                  setMessage('')
-                }}
-                className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded"
-                title="Nieuw gesprek starten"
-              >
-                🔄 Nieuw gesprek
-              </button>
-            </div>
-            <p className="text-green-600 text-xs mt-1 ml-5">
-              Typ je professionele reactie hieronder en druk Enter om het rollenspel voort te zetten
-            </p>
-          </div>
-        )}
-
-        {/* Response Area */}
-        {/* Show "Nieuw gesprek" button when there's a response */}
-        {(response || streamingResponse) && !isStreaming && !isWaitingForStream && !isLoading && (
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => {
-                setResponse('')
-                setStreamingResponse('')
-                setMessage('')
-                setUploadedFiles([])
-                setGroundingData(null)
-                if (textareaRef.current) {
-                  textareaRef.current.focus()
-                }
-              }}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors flex items-center space-x-2"
-            >
-              <span>🔄</span>
-              <span>Nieuw gesprek</span>
-            </button>
-          </div>
-        )}
-        
+        {/* Response Area - Now comes BEFORE input field */}
         {isWaitingForStream && (
           <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
             <div className="flex items-center space-x-3">
@@ -1288,16 +1083,148 @@ export default function TestChatBot() {
                 )}
               </div>
             )}
-
           </div>
         )}
+
+        {/* User Turn Prompt - Shows when it's the user's turn to respond */}
+        {isUserTurnToRespond && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🎯</span>
+                </div>
+                <div>
+                  <h4 className="text-green-800 font-semibold">Reageer nu als handhaver op deze situatie</h4>
+                  <p className="text-green-600 text-sm">Typ je professionele reactie hieronder en druk Enter om het rollenspel voort te zetten</p>
+                </div>
+              </div>
+              <button
+                onClick={handleNewConversation}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                📝 Nieuw gesprek
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Input Area - Now comes AFTER the response */}
+        <div className={`bg-white rounded-lg border transition-all duration-200 p-3 ${
+          isDragOver 
+            ? 'border-purple-500 border-2 bg-purple-50' 
+            : 'border-purple-200'
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}>
+
+          {/* Drag & Drop Overlay */}
+          {isDragOver && (
+            <div className="absolute inset-2 border-2 border-dashed border-purple-400 rounded-lg bg-purple-50 bg-opacity-90 flex items-center justify-center z-10">
+              <div className="text-center">
+                <div className="text-4xl mb-2">📁</div>
+                <p className="text-purple-700 font-semibold">Drop bestanden of tekst hier</p>
+                <p className="text-purple-600 text-sm">Afbeeldingen, documenten, of URLs</p>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-end space-x-2">
+            {/* Text Input */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder={
+                  isUserTurnToRespond 
+                    ? "Reageer nu als handhaver op deze situatie..." 
+                    : isDragOver 
+                      ? "Drop bestanden of tekst hier..." 
+                      : "Typ een vraag voor Gemini... (of plak met Ctrl+V)"
+                }
+                className="w-full p-2 border-0 resize-none focus:outline-none"
+                rows={2}
+                disabled={isLoading}
+              />
+              {pasteHint && (
+                <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                  {pasteHint}
+                </div>
+              )}
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2">
+              {/* File Upload Button */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                title="Bestand uploaden (📸 afbeeldingen, 📄 documenten, 📊 data, 🎵 audio)"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                </svg>
+              </button>
+              
+              {/* Camera Button */}
+              <CameraCapture 
+                onCapture={handleCameraCapture}
+                disabled={isLoading}
+              />
+              
+              {/* Voice Input Button */}
+              <button
+                onClick={toggleVoiceRecognition}
+                disabled={isLoading}
+                className={`p-2 rounded-lg transition-colors ${
+                  isListening 
+                    ? 'text-red-600 bg-red-50 animate-pulse' 
+                    : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'
+                }`}
+                title={isListening ? "Stop opnamen" : "Start spraakherkenning"}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </button>
+              
+              {/* Send Button */}
+              <button
+                onClick={sendMessageStreaming}
+                disabled={(isLoading || isStreaming || isWaitingForStream) || (!message.trim() && getSelectedFiles().length === 0)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isWaitingForStream ? '🤔' : isStreaming ? '💭' : isLoading ? '⏳' : '🚀'}
+              </button>
+            </div>
+          </div>
+          
+          {/* Upload Status */}
+          {uploadedContent && (
+            <div className="mt-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+              ✅ Bestand geüpload ({uploadedContent.length} karakters)
+            </div>
+          )}
+          
+          {/* Voice Status */}
+          {isListening && (
+            <div className="mt-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+              Luistert...
+            </div>
+          )}
+        </div>
 
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
           multiple
-                      accept=".docx,.pdf,.txt,.md,.csv,.json,.jpg,.jpeg,.png,.gif,.webp,.bmp,image/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mpeg,.mpga,.webm,audio/*"
+          accept=".docx,.pdf,.txt,.md,.csv,.json,.jpg,.jpeg,.png,.gif,.webp,.bmp,image/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mpeg,.mpga,.webm,audio/*"
           onChange={(e) => {
             const files = e.target.files
             if (files && files.length > 0) {
