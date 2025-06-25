@@ -58,17 +58,21 @@ export async function POST(request: NextRequest) {
                              message.toLowerCase().includes('rol van')
     
     if (isRoleplayRequest) {
-      processedMessage = `${message}
+      processedMessage = `ROLLENSPEL SCENARIO - BLIJF VOLLEDIG IN KARAKTER!
 
-BELANGRIJKE INSTRUCTIES VOOR ROLLENSPEL:
-- Speel ALLEEN de gevraagde rol (burger, ondernemer, jongere, etc.)
-- Spreek de handhaver direct aan in de situatie
-- Geef GEEN uitleg of tips - blijf volledig in karakter
-- Wacht op de reactie van de handhaver voordat je verder gaat
-- Reageer realistisch op wat de handhaver zegt of doet
-- Begin direct met de situatie, geen inleiding
+${message}
 
-Start nu direct in de rol:`
+KRITIEKE INSTRUCTIES - VOLG DEZE EXACT OP:
+1. Je bent NU de gevraagde persoon (boze burger, ondernemer, etc.)
+2. Spreek ALLEEN als die persoon - geen uitleg, geen tips, geen AI-commentaar
+3. Reageer emotioneel en realistisch zoals die persoon zou doen
+4. Spreek de handhaver direct aan: "U..." of "Jij..."
+5. VERBODEN: Uitleggen wat je doet, tips geven, uit karakter vallen
+6. Begin DIRECT met praten als die persoon in de situatie
+
+BELANGRIJK: Geef ALLEEN de directe reactie van het karakter. Niets anders!
+
+[START ROLLENSPEL - Reageer nu als het gevraagde karakter]:`
     }
     // Selecteer het juiste model op basis van aiModel
     const modelName = aiModel === 'pro' ? 'gemini-2.5-pro-preview-06-05' :
