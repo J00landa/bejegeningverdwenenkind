@@ -211,44 +211,44 @@ Jouw reactie als ${roleplayCharacter}:`
             })
           } else {
             // Regular single-turn conversation
-          if (images && images.length > 0) {
-            // Multiple images - use new images array
-            const imageParts = images.map((imageData: string) => {
-              const imageBuffer = base64ToBuffer(imageData)
-              return {
+            if (images && images.length > 0) {
+              // Multiple images - use new images array
+              const imageParts = images.map((imageData: string) => {
+                const imageBuffer = base64ToBuffer(imageData)
+                return {
+                  inlineData: {
+                    data: imageBuffer.toString('base64'),
+                    mimeType: 'image/jpeg'
+                  }
+                }
+              })
+              
+              result = await generateStreamWithFallback({
+                contents: [{ role: 'user', parts: [{ text: processedMessage }, ...imageParts] }],
+                tools: tools
+              })
+            } else if (image) {
+              // Backward compatibility - single image (legacy)
+              const imageBuffer = base64ToBuffer(image)
+              
+              const imagePart = {
                 inlineData: {
                   data: imageBuffer.toString('base64'),
                   mimeType: 'image/jpeg'
                 }
               }
-            })
-            
-            result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: processedMessage }, ...imageParts] }],
-              tools: tools
-            })
-          } else if (image) {
-            // Backward compatibility - single image (legacy)
-            const imageBuffer = base64ToBuffer(image)
-            
-            const imagePart = {
-              inlineData: {
-                data: imageBuffer.toString('base64'),
-                mimeType: 'image/jpeg'
-              }
+              
+              result = await generateStreamWithFallback({
+                contents: [{ role: 'user', parts: [{ text: processedMessage }, imagePart] }],
+                tools: tools
+              })
+            } else {
+              // Text only
+              result = await generateStreamWithFallback({
+                contents: [{ role: 'user', parts: [{ text: processedMessage }] }],
+                tools: tools
+              })
             }
-            
-            result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: processedMessage }, imagePart] }],
-              tools: tools
-            })
-          } else {
-            // Text only
-            result = await generateStreamWithFallback({
-              contents: [{ role: 'user', parts: [{ text: processedMessage }] }],
-              tools: tools
-            })
-          }
           }
 
           // Stream the response token by token
@@ -266,12 +266,14 @@ Jouw reactie als ${roleplayCharacter}:`
                 controller.enqueue(
                   new TextEncoder().encode(`data: ${data}\n\n`)
                 )
-              // Only log parsing errors that aren't known API errors
-              const errorString = parseError.toString()
-              if (!errorString.includes('[503]') && 
-                  !errorString.includes('overloaded') && 
-                  !errorString.includes('PROHIBITED_CONTENT')) {
-                break
+              } catch (parseError) {
+                // Only log parsing errors that aren't known API errors
+                const errorString = parseError.toString()
+                if (!errorString.includes('[503]') && 
+                    !errorString.includes('overloaded') && 
+                    !errorString.includes('PROHIBITED_CONTENT')) {
+                  break
+                }
               }
             }
           }
