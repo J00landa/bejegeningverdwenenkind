@@ -216,28 +216,68 @@ export default function Home() {
 
           {/* Example Prompts */}
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">💬 Voorbeeldvragen voor HTV situaties:</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="bg-white p-3 rounded border-l-4 border-blue-400">
-                  <p className="text-sm text-gray-700">"Simuleer een gesprek met een agressieve overtreder die een boete weigert te accepteren"</p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">💬 Hoe gebruik je de AI Assistent?</h3>
+            
+            {/* Rollenspel Section - Highlighted */}
+            <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+              <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
+                🎭 ROLLENSPEL TRAINING - Meest Effectieve Leermethod!
+              </h4>
+              <p className="text-blue-700 text-sm mb-3">
+                <strong>Zo werkt het:</strong> Vraag de AI om een rol te spelen (boze burger, overtreder, etc.). 
+                Jij bent de handhaver en reageert professioneel. De AI blijft in karakter en reageert op jouw aanpak!
+              </p>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className="bg-white p-3 rounded border-l-4 border-red-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">🔥 Agressieve Situaties</p>
+                  <p className="text-xs text-gray-600">"Speel een boze burger die zijn boete weigert te betalen en dreigt met een klacht"</p>
                 </div>
-                <div className="bg-white p-3 rounded border-l-4 border-green-400">
-                  <p className="text-sm text-gray-700">"Hoe leg ik een complexe regelgeving uit aan een boze ondernemer?"</p>
+                <div className="bg-white p-3 rounded border-l-4 border-orange-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">😤 Emotionele Reacties</p>
+                  <p className="text-xs text-gray-600">"Simuleer een huilende ondernemer die zijn vergunning verliest en niet begrijpt waarom"</p>
                 </div>
                 <div className="bg-white p-3 rounded border-l-4 border-purple-400">
-                  <p className="text-sm text-gray-700">"Oefen een gesprek met iemand die beweert discriminatie bij controle"</p>
+                  <p className="text-sm text-gray-700 font-medium mb-1">🤔 Onbegrip & Weerstand</p>
+                  <p className="text-xs text-gray-600">"Speel iemand die de regels niet begrijpt en beweert dat het discriminatie is"</p>
+                </div>
+                <div className="bg-white p-3 rounded border-l-4 border-green-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">👥 Groepsdynamiek</p>
+                  <p className="text-xs text-gray-600">"Simuleer een groep jongeren die overlast veroorzaakt en uitdagend reageert"</p>
+                </div>
+              </div>
+              <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-600">
+                💡 <strong>Tip:</strong> Begin met "Speel de rol van..." of "Simuleer een gesprek met..." 
+                De AI blijft dan consequent in die rol en reageert realistisch op jouw handhavingsaanpak!
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="bg-white p-3 rounded border-l-4 border-indigo-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">📚 Theorie & Uitleg</p>
+                  <p className="text-xs text-gray-600">"Leg de escalatieladder uit met praktijkvoorbeelden"</p>
+                </div>
+                <div className="bg-white p-3 rounded border-l-4 border-teal-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">🗣️ Communicatietips</p>
+                  <p className="text-xs text-gray-600">"Hoe leg ik complexe APV regels uit aan een boze ondernemer?"</p>
+                </div>
+                <div className="bg-white p-3 rounded border-l-4 border-pink-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">⚖️ Juridische Vragen</p>
+                  <p className="text-xs text-gray-600">"Wanneer mag ik overgaan tot dwangmiddelen bij weigering?"</p>
                 </div>
               </div>
               <div className="space-y-3">
-                <div className="bg-white p-3 rounded border-l-4 border-orange-400">
-                  <p className="text-sm text-gray-700">"Geef feedback op mijn aanpak: [upload situatieverslag]"</p>
+                <div className="bg-white p-3 rounded border-l-4 border-yellow-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">📋 Situatie Analyse</p>
+                  <p className="text-xs text-gray-600">"Analyseer mijn aanpak: [upload situatieverslag of audio]"</p>
                 </div>
-                <div className="bg-white p-3 rounded border-l-4 border-red-400">
-                  <p className="text-sm text-gray-700">"Hoe ga ik om met een groep jongeren die overlast veroorzaakt?"</p>
+                <div className="bg-white p-3 rounded border-l-4 border-cyan-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">🎯 De-escalatie Training</p>
+                  <p className="text-xs text-gray-600">"Geef me 5 de-escalatietechnieken voor agressieve situaties"</p>
                 </div>
-                <div className="bg-white p-3 rounded border-l-4 border-indigo-400">
-                  <p className="text-sm text-gray-700">"Leg de escalatieladder uit met praktijkvoorbeelden"</p>
+                <div className="bg-white p-3 rounded border-l-4 border-emerald-400">
+                  <p className="text-sm text-gray-700 font-medium mb-1">🔄 Reflectie & Verbetering</p>
+                  <p className="text-xs text-gray-600">"Wat had ik anders kunnen doen in deze situatie?"</p>
                 </div>
               </div>
             </div>

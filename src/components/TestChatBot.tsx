@@ -950,10 +950,44 @@ export default function TestChatBot() {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={isDragOver ? "Drop bestanden of tekst hier..." : "Typ een vraag voor Gemini... (of plak met Ctrl+V)"}
+                placeholder={isDragOver ? "Drop bestanden of tekst hier..." : "Vraag om uitleg, tips, of start een rollenspel: 'Speel een boze burger die...' 🎭"}
                 className="w-full p-2 border-0 resize-none focus:outline-none"
                 rows={2}
                 disabled={isLoading}
               />
+              
+              {/* Rollenspel Quick Start Buttons */}
+              {!message.trim() && uploadedFiles.length === 0 && (
+                <div className="absolute bottom-2 left-2 right-2">
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <button
+                      onClick={() => setMessage("Speel een boze burger die zijn parkeerboete weigert te betalen en dreigt met een klacht. Ik ben de handhaver.")}
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded-full transition-colors"
+                    >
+                      🎭 Boze Burger
+                    </button>
+                    <button
+                      onClick={() => setMessage("Simuleer een emotionele ondernemer die zijn terrasvergunning verliest. Speel de rol realistisch. Ik ben de handhaver.")}
+                      className="text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 px-2 py-1 rounded-full transition-colors"
+                    >
+                      😤 Ondernemer
+                    </button>
+                    <button
+                      onClick={() => setMessage("Speel een groep jongeren die overlast veroorzaakt en uitdagend reageert op aanspreken. Ik ben de handhaver.")}
+                      className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-700 px-2 py-1 rounded-full transition-colors"
+                    >
+                      👥 Jongeren
+                    </button>
+                    <button
+                      onClick={() => setMessage("Simuleer iemand die beweert dat de controle discriminatie is en dreigt met de media. Ik ben de handhaver.")}
+                      className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded-full transition-colors"
+                    >
+                      🤔 Discriminatie
+                    </button>
+                  </div>
+                </div>
+              )}
+              
               {pasteHint && (
                 <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
                   {pasteHint}
