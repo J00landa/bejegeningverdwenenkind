@@ -661,7 +661,10 @@ export default function TestChatBot() {
                 console.log('Streaming token:', data.token, 'Total length:', newResponse.length)
               }
             } catch (parseError) {
-              console.error('Error parsing streaming data:', parseError)
+              // Only log parsing errors that aren't 503 overload errors
+              if (!parseError.toString().includes('[503]') && !parseError.toString().includes('overloaded')) {
+                console.error('Error parsing streaming data:', parseError)
+              }
             }
           }
         }

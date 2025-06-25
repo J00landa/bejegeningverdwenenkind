@@ -10,6 +10,42 @@ function base64ToBuffer(base64: string): Buffer {
   return Buffer.from(base64Data, 'base64')
 }
 
+// Helper function to implement retry logic with exponential backoff
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation()
+    } catch (error: any) {
+      lastError = error
+      
+      // Check if it's a 503 overloaded error
+      const is503Error = error.message?.includes('[503]') || 
+                         error.message?.includes('overloaded') ||
+                         error.status === 503
+      
+      // If it's the last attempt or not a retryable error, throw
+      if (attempt === maxRetries || !is503Error) {
+        throw error
+      }
+      
+      // Calculate delay with exponential backoff and jitter
+      const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000
+      console.log(`Attempt ${attempt + 1} failed with 503 error, retrying in ${Math.round(delay)}ms...`)
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  
+  throw lastError!
+}
+
 // Google Search tool configuratie
 const googleSearchTool = {
   googleSearch: {}
@@ -115,14 +151,14 @@ Jouw reactie als ${roleplayCharacter}:`
     // Helper function to generate content with fallback
     const generateWithFallback = async (requestConfig: any) => {
       try {
-        return await model.generateContent(requestConfig)
+        return await retryWithBackoff(() => model.generateContent(requestConfig))
       } catch (error: any) {
         // If grounding fails, retry without tools
         if (useGrounding && (error.message?.includes('Search Grounding is not supported') || 
                             error.message?.includes('google_search_retrieval is not supported'))) {
           console.log('Grounding not supported, retrying without grounding...')
           const { tools, ...configWithoutTools } = requestConfig
-          return await model.generateContent(configWithoutTools)
+          return await retryWithBackoff(() => model.generateContent(configWithoutTools))
         }
         throw error
       }
@@ -236,12 +272,16 @@ Jouw reactie als ${roleplayCharacter}:`
   } catch (error) {
     console.error('Fout bij het aanroepen van Gemini API:', error)
     
-    // Betere error information voor debugging
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    let errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    
+    // Provide user-friendly message for 503 errors
+    if (errorMessage.includes('[503]') || errorMessage.includes('overloaded')) {
+      errorMessage = 'De AI service is momenteel overbelast. We hebben het automatisch opnieuw geprobeerd, maar het lukt nog niet. Probeer het over een paar minuten opnieuw.'
+    }
     
     return NextResponse.json(
       { 
-        error: 'Er is een fout opgetreden bij het verwerken van je bericht',
+        error: errorMessage.includes('overbelast') ? errorMessage : 'Er is een fout opgetreden bij het verwerken van je bericht',
         details: errorMessage,
         timestamp: new Date().toISOString(),
         hint: 'Check Netlify Function logs voor meer details'
