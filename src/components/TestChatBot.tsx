@@ -625,6 +625,13 @@ export default function TestChatBot() {
               const data = JSON.parse(line.slice(6))
               
               if (data.error) {
+                // Handle specific error types
+                if (data.errorType === 'PROHIBITED_CONTENT') {
+                  setIsStreaming(false)
+                  setIsWaitingForStream(false)
+                  setResponse(`❌ **Inhoud niet toegestaan**\n\n${data.message}\n\n💡 **Tips:**\n- Formuleer je vraag anders\n- Vermijd gevoelige onderwerpen\n- Gebruik neutrale taal\n- Probeer een meer algemene vraag`)
+                  return
+                }
                 throw new Error(data.message || 'Streaming error')
               }
               
@@ -672,6 +679,12 @@ export default function TestChatBot() {
 
     } catch (error: any) {
       console.error('Streaming error:', error)
+      
+      // Handle prohibited content error
+      if (error.message?.includes('PROHIBITED_CONTENT')) {
+        setResponse('❌ **Inhoud niet toegestaan**\n\nJe bericht bevat inhoud die niet is toegestaan volgens Google\'s richtlijnen.\n\n💡 **Tips:**\n- Formuleer je vraag anders\n- Vermijd gevoelige onderwerpen\n- Gebruik neutrale taal\n- Probeer een meer algemene vraag')
+        return
+      }
       
       if (error.name === 'AbortError') {
         // Request was aborted - keep current streaming response if available

@@ -266,8 +266,11 @@ Jouw reactie als ${roleplayCharacter}:`
                 controller.enqueue(
                   new TextEncoder().encode(`data: ${data}\n\n`)
                 )
-              } catch (error) {
-                console.log('Controller already closed, stopping stream')
+              // Only log parsing errors that aren't known API errors
+              const errorString = parseError.toString()
+              if (!errorString.includes('[503]') && 
+                  !errorString.includes('overloaded') && 
+                  !errorString.includes('PROHIBITED_CONTENT')) {
                 break
               }
             }
@@ -286,6 +289,38 @@ Jouw reactie als ${roleplayCharacter}:`
 
         } catch (error) {
           console.error('Streaming error:', error)
+          
+          // Check for prohibited content error
+          if (error.message?.includes('PROHIBITED_CONTENT')) {
+            const errorData = JSON.stringify({
+              error: true,
+              message: 'Je bericht bevat inhoud die niet is toegestaan volgens Google\'s richtlijnen. Probeer je vraag anders te formuleren of vermijd gevoelige onderwerpen.',
+              errorType: 'PROHIBITED_CONTENT'
+            })
+            
+            controller.enqueue(
+              new TextEncoder().encode(`data: ${errorData}\n\n`)
+            )
+            
+            controller.close()
+            return
+          }
+          
+          // Check for prohibited content error
+          if (error.message?.includes('PROHIBITED_CONTENT')) {
+            const errorData = JSON.stringify({
+              error: true,
+              message: 'Je bericht bevat inhoud die niet is toegestaan volgens Google\'s richtlijnen. Probeer je vraag anders te formuleren of vermijd gevoelige onderwerpen.',
+              errorType: 'PROHIBITED_CONTENT'
+            })
+            
+            controller.enqueue(
+              new TextEncoder().encode(`data: ${errorData}\n\n`)
+            )
+            
+            controller.close()
+            return
+          }
           
           // Send error to client
           const errorData = JSON.stringify({
@@ -318,6 +353,19 @@ Jouw reactie als ${roleplayCharacter}:`
     console.error('Streaming API error:', error)
     
     let errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    
+    // Handle prohibited content error
+    if (errorMessage.includes('PROHIBITED_CONTENT')) {
+      return NextResponse.json(
+        { 
+          error: 'Je bericht bevat inhoud die niet is toegestaan volgens Google\'s richtlijnen. Probeer je vraag anders te formuleren of vermijd gevoelige onderwerpen.',
+          errorType: 'PROHIBITED_CONTENT',
+          hint: 'Vermijd gevoelige onderwerpen, geweld, discriminatie of andere inhoud die tegen Google\'s beleid ingaat.',
+          timestamp: new Date().toISOString()
+        },
+        { status: 400 }
+      )
+    }
     
     // Provide user-friendly message for 503 errors
     if (errorMessage.includes('[503]') || errorMessage.includes('overloaded')) {
