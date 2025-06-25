@@ -34,7 +34,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('Received request body:', body)
     
-    const { message, image, images, useGrounding = true, aiModel = 'smart' } = body
+    const { 
+      message, 
+      image, 
+      images, 
+      useGrounding = true, 
+      aiModel = 'smart',
+      conversationHistory = [],
+      isInRoleplay = false,
+      roleplayCharacter = ''
+    } = body
 
     if (!message) {
       return NextResponse.json(
@@ -53,11 +62,11 @@ export async function POST(request: NextRequest) {
 
     // Detect roleplay requests and add specific instructions
     let processedMessage = message
-    const isRoleplayRequest = message.toLowerCase().includes('speel') || 
-                             message.toLowerCase().includes('simuleer') || 
-                             message.toLowerCase().includes('rol van')
+    const isNewRoleplayRequest = message.toLowerCase().includes('speel') || 
+                                message.toLowerCase().includes('simuleer') || 
+                                message.toLowerCase().includes('rol van')
     
-    if (isRoleplayRequest) {
+    if (isNewRoleplayRequest) {
       processedMessage = `${message}
 
 BELANGRIJKE INSTRUCTIES VOOR ROLLENSPEL:
@@ -69,6 +78,19 @@ BELANGRIJKE INSTRUCTIES VOOR ROLLENSPEL:
 - Begin direct met de situatie, geen inleiding
 
 Start nu direct in de rol:`
+    } else if (isInRoleplay && roleplayCharacter) {
+      processedMessage = `ROLLENSPEL CONTEXT: Je speelt de rol van "${roleplayCharacter}". 
+
+BLIJF IN KARAKTER:
+- Reageer ALLEEN als "${roleplayCharacter}"
+- Geef GEEN uitleg, tips of meta-commentaar
+- Reageer realistisch op wat de handhaver zegt
+- Blijf emotioneel consistent met je karakter
+- Spreek de handhaver direct aan
+
+Handhaver zegt: "${message}"
+
+Jouw reactie als ${roleplayCharacter}:`
     }
     // Selecteer het juiste model op basis van aiModel
     const modelName = aiModel === 'pro' ? 'gemini-2.5-pro-preview-06-05' :
@@ -97,6 +119,49 @@ Start nu direct in de rol:`
       }
     }
     
+    // Build conversation context for roleplay
+    if (isInRoleplay && conversationHistory.length > 0) {
+      // Add conversation history to maintain context
+      let contents = []
+      
+      for (const entry of conversationHistory) {
+        contents.push({
+          role: entry.role === 'user' ? 'user' : 'model',
+          parts: [{ text: entry.content }]
+        })
+      }
+      
+      // Add current message
+      if (images && images.length > 0) {
+        const imageParts = images.map((imageData: string) => {
+          const imageBuffer = base64ToBuffer(imageData)
+          return {
+            inlineData: {
+              data: imageBuffer.toString('base64'),
+              mimeType: 'image/jpeg'
+            }
+          }
+        })
+        contents.push({ role: 'user', parts: [{ text: processedMessage }, ...imageParts] })
+      } else if (image) {
+        const imageBuffer = base64ToBuffer(image)
+        const imagePart = {
+          inlineData: {
+            data: imageBuffer.toString('base64'),
+            mimeType: 'image/jpeg'
+          }
+        }
+        contents.push({ role: 'user', parts: [{ text: processedMessage }, imagePart] })
+      } else {
+        contents.push({ role: 'user', parts: [{ text: processedMessage }] })
+      }
+      
+      result = await generateWithFallback({
+        contents: contents,
+        tools: tools
+      })
+    } else {
+      // Regular single-turn conversation
     if (images && images.length > 0) {
       // Meerdere afbeeldingen - gebruik nieuwe images array
       const imageParts = images.map((imageData: string) => {
@@ -134,6 +199,7 @@ Start nu direct in de rol:`
         contents: [{ role: 'user', parts: [{ text: processedMessage }] }],
         tools: tools
       })
+    }
     }
 
     const response = await result.response

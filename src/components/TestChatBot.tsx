@@ -27,6 +27,9 @@ export default function TestChatBot() {
   const [useGrounding, setUseGrounding] = useState(true)
   const [groundingData, setGroundingData] = useState<any>(null)
   const [isUserTurnToRespond, setIsUserTurnToRespond] = useState(false)
+  const [conversationHistory, setConversationHistory] = useState<Array<{role: string, content: string}>>([])
+  const [isInRoleplay, setIsInRoleplay] = useState(false)
+  const [roleplayCharacter, setRoleplayCharacter] = useState('')
 
   // Automatically enable grounding when Internet model is selected
   useEffect(() => {
@@ -172,6 +175,9 @@ export default function TestChatBot() {
     setIsLoading(false)
     setIsStreaming(false)
     setIsWaitingForStream(false)
+    setConversationHistory([])
+    setIsInRoleplay(false)
+    setRoleplayCharacter('')
   }
 
   const handlePaste = async (e: ClipboardEvent) => {
@@ -512,6 +518,23 @@ export default function TestChatBot() {
     // Reset user turn state at the beginning
     setIsUserTurnToRespond(false)
 
+    // Detect if this is a roleplay request
+    const isRoleplayRequest = message.toLowerCase().includes('speel') || 
+                             message.toLowerCase().includes('simuleer') || 
+                             message.toLowerCase().includes('rol van')
+    
+    // If it's a new roleplay request, reset conversation history
+    if (isRoleplayRequest && !isInRoleplay) {
+      setIsInRoleplay(true)
+      setConversationHistory([])
+      
+      // Extract character from the message
+      const characterMatch = message.match(/(?:speel|simuleer).*?(?:rol van|een|de)\s+([^.!?]+)/i)
+      if (characterMatch) {
+        setRoleplayCharacter(characterMatch[1].trim())
+      }
+    }
+
     // Reset states
     setIsWaitingForStream(true)
     setIsStreaming(false)
@@ -528,7 +551,10 @@ export default function TestChatBot() {
       const payload: any = { 
         message, 
         useGrounding: aiModel === 'internet' ? useGrounding : false,
-        aiModel 
+        aiModel,
+        conversationHistory: conversationHistory,
+        isInRoleplay: isInRoleplay,
+        roleplayCharacter: roleplayCharacter
       }
       
       // Add selected files to payload
@@ -607,6 +633,15 @@ export default function TestChatBot() {
                 setIsStreaming(false)
                 setIsWaitingForStream(false)
                 setResponse(currentStreamingResponseRef.current)
+                
+                // Add to conversation history
+                const newHistory = [
+                  ...conversationHistory,
+                  { role: 'user', content: message },
+                  { role: 'assistant', content: currentStreamingResponseRef.current }
+                ]
+                setConversationHistory(newHistory)
+                
                 return
               }
               
